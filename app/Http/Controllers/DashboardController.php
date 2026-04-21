@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $currentYear = Carbon::now()->year;
 
         // Stats
-        $totalEmployees = Employee::active()->count();
+        $totalEmployees = Employee::count();
         $presentToday = Attendance::whereDate('date', $today)
             ->whereIn('status', ['present', 'late'])->count();
         $absentToday = $totalEmployees - $presentToday;

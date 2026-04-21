@@ -12,17 +12,7 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search employees..."
                        class="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 w-64">
             </div>
-            <select name="unit_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-                <option value="">All Units</option>
-                @foreach($units as $unit)
-                    <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
-                @endforeach
-            </select>
-            <select name="status" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-                <option value="">All Status</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-            </select>
+
             <button type="submit" class="px-4 py-2 bg-slate-800 text-white text-sm rounded-xl hover:bg-slate-700 transition-colors">Search</button>
         </form>
     </div>
@@ -45,8 +35,6 @@
                     <th class="text-left px-5 py-3 font-semibold text-slate-600">PF Number</th>
                     <th class="text-left px-5 py-3 font-semibold text-slate-600">NIC</th>
                     <th class="text-left px-5 py-3 font-semibold text-slate-600">Designation</th>
-                    <th class="text-left px-5 py-3 font-semibold text-slate-600">Unit</th>
-                    <th class="text-left px-5 py-3 font-semibold text-slate-600">Status</th>
                     <th class="text-left px-5 py-3 font-semibold text-slate-600">Actions</th>
                 </tr>
             </thead>
@@ -68,18 +56,6 @@
                     <td class="px-5 py-3 text-slate-600 font-mono text-xs">{{ $employee->pf_number }}</td>
                     <td class="px-5 py-3 text-slate-600 font-mono text-xs">{{ $employee->nic }}</td>
                     <td class="px-5 py-3 text-slate-600">{{ $employee->current_designation }}</td>
-                    <td class="px-5 py-3">
-                        @if($employee->unit)
-                            <span class="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-lg font-medium">{{ $employee->unit->name }}</span>
-                        @else
-                            <span class="text-xs text-slate-400">Unassigned</span>
-                        @endif
-                    </td>
-                    <td class="px-5 py-3">
-                        <span class="px-2 py-1 text-xs rounded-full font-medium {{ $employee->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">
-                            {{ $employee->is_active ? 'Active' : 'Inactive' }}
-                        </span>
-                    </td>
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-1">
                             <a href="{{ route('employees.show', $employee) }}" class="p-1.5 rounded-lg hover:bg-blue-50 text-slate-400 hover:text-blue-600 transition-colors" title="View">

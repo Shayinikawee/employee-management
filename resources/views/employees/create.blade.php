@@ -48,15 +48,6 @@
                     @error('current_designation')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
-                    <select name="unit_id" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-                        <option value="">— Select Unit —</option>
-                        @foreach($units as $unit)
-                            <option value="{{ $unit->id }}" {{ old('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Date of First Appointment <span class="text-red-500">*</span></label>
                     <input type="date" name="date_of_first_appointment" value="{{ old('date_of_first_appointment') }}" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400">
                 </div>

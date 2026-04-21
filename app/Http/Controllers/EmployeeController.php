@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
-use App\Models\Unit;
 use App\Models\WorkHistory;
 use App\Models\LeaveType;
 use App\Models\LeaveBalance;
@@ -20,18 +19,9 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Employee::with('unit')
-            ->search($request->search)
-            ->filterByUnit($request->unit_id);
-
-        if ($request->status === 'active') {
-            $query->active();
-        } elseif ($request->status === 'inactive') {
-            $query->where('is_active', false);
-        }
+        $query = Employee::search($request->search);
 
         $employees = $query->orderBy('name')->paginate(15)->withQueryString();
-        $units = Unit::orderBy('name')->get();
 
         if ($request->ajax()) {
             return response()->json([
@@ -40,7 +30,7 @@ class EmployeeController extends Controller
             ]);
         }
 
-        return view('employees.index', compact('employees', 'units'));
+        return view('employees.index', compact('employees'));
     }
 
     /**
@@ -48,8 +38,7 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        $units = Unit::orderBy('name')->get();
-        return view('employees.create', compact('units'));
+        return view('employees.create');
     }
 
     /**
@@ -82,7 +71,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        $employee->load(['unit', 'workHistories', 'leaveBalances.leaveType']);
+        $employee->load(['workHistories', 'leaveBalances.leaveType']);
 
         return view('employees.show', compact('employee'));
     }
@@ -93,9 +82,8 @@ class EmployeeController extends Controller
     public function edit(Employee $employee)
     {
         $employee->load('workHistories');
-        $units = Unit::orderBy('name')->get();
 
-        return view('employees.edit', compact('employee', 'units'));
+        return view('employees.edit', compact('employee'));
     }
 
     /**
@@ -154,15 +142,7 @@ class EmployeeController extends Controller
 
     public function export(Request $request)
     {
-        $query = Employee::with('unit')
-            ->search($request->search)
-            ->filterByUnit($request->unit_id);
-
-        if ($request->status === 'active') {
-            $query->active();
-        } elseif ($request->status === 'inactive') {
-            $query->where('is_active', false);
-        }
+        $query = Employee::search($request->search);
 
         $employees = $query->orderBy('name')->get();
 
@@ -183,7 +163,7 @@ class EmployeeController extends Controller
 
         $callback = function () use ($employees) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Name', 'PF Number', 'Email', 'NIC', 'Contact', 'Unit', 'Designation', 'Status']);
+            fputcsv($file, ['Name', 'PF Number', 'Email', 'NIC', 'Contact', 'Designation', 'Grade']);
             foreach ($employees as $employee) {
                 fputcsv($file, [
                     $employee->name,
@@ -191,9 +171,8 @@ class EmployeeController extends Controller
                     $employee->email,
                     $employee->nic,
                     $employee->contact_number,
-                    $employee->unit?->name,
                     $employee->current_designation,
-                    $employee->is_active ? 'Active' : 'Inactive',
+                    $employee->grade,
                 ]);
             }
             fclose($file);

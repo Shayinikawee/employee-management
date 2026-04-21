@@ -22,12 +22,7 @@
             <div class="flex-1">
                 <h2 class="text-xl font-bold text-slate-800">{{ $employee->name }}</h2>
                 <p class="text-sm text-slate-500">{{ $employee->current_designation }} · {{ $employee->grade }}</p>
-                <div class="flex items-center gap-3 mt-2">
-                    <span class="px-2 py-0.5 text-xs rounded-full font-medium {{ $employee->is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500' }}">{{ $employee->is_active ? 'Active' : 'Inactive' }}</span>
-                    @if($employee->unit)
-                    <span class="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 font-medium">{{ $employee->unit->name }}</span>
-                    @endif
-                </div>
+
             </div>
         </div>
     </div>
@@ -60,7 +55,6 @@
                 @foreach([
                     ['Grade', $employee->grade],
                     ['Designation', $employee->current_designation],
-                    ['Unit', $employee->unit?->name ?? 'Unassigned'],
                     ['First Appointment', $employee->date_of_first_appointment?->format('d M Y')],
                     ['Confirmation', $employee->date_of_confirmation?->format('d M Y') ?? 'Pending'],
                 ] as [$label, $value])

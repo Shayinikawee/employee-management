@@ -46,28 +46,12 @@
                     <input type="text" name="current_designation" value="{{ old('current_designation', $employee->current_designation) }}" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Unit</label>
-                    <select name="unit_id" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-                        <option value="">— Select Unit —</option>
-                        @foreach($units as $unit)
-                            <option value="{{ $unit->id }}" {{ old('unit_id', $employee->unit_id) == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Date of First Appointment <span class="text-red-500">*</span></label>
                     <input type="date" name="date_of_first_appointment" value="{{ old('date_of_first_appointment', $employee->date_of_first_appointment?->format('Y-m-d')) }}" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Date of Confirmation</label>
                     <input type="date" name="date_of_confirmation" value="{{ old('date_of_confirmation', $employee->date_of_confirmation?->format('Y-m-d')) }}" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-                </div>
-                <div>
-                    <label class="flex items-center gap-2 mt-6">
-                        <input type="hidden" name="is_active" value="0">
-                        <input type="checkbox" name="is_active" value="1" {{ old('is_active', $employee->is_active) ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500/50">
-                        <span class="text-sm font-medium text-slate-700">Active Employee</span>
-                    </label>
                 </div>
             </div>
         </div>

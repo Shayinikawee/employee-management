@@ -32,8 +32,6 @@ class EmployeeRequest extends FormRequest
             'current_designation' => 'required|string|max:255',
             'date_of_first_appointment' => 'required|date',
             'date_of_confirmation' => 'nullable|date',
-            'unit_id' => 'nullable|exists:units,id',
-            'is_active' => 'nullable|boolean',
             'work_histories' => 'nullable|array',
             'work_histories.*.from_date' => 'required_with:work_histories.*.position|date',
             'work_histories.*.to_date' => 'nullable|date|after_or_equal:work_histories.*.from_date',

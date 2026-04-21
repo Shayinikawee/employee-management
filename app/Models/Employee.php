@@ -23,8 +23,6 @@ class Employee extends Model
         'current_designation',
         'date_of_first_appointment',
         'date_of_confirmation',
-        'unit_id',
-        'is_active',
     ];
 
     protected function casts(): array
@@ -42,11 +40,6 @@ class Employee extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function unit()
-    {
-        return $this->belongsTo(Unit::class);
     }
 
     public function workHistories()
@@ -71,11 +64,6 @@ class Employee extends Model
 
     // ── Scopes ─────────────────────────────────────
 
-    public function scopeActive(Builder $query): Builder
-    {
-        return $query->where('is_active', true);
-    }
-
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
         if (!$search) return $query;
@@ -89,10 +77,4 @@ class Employee extends Model
         });
     }
 
-    public function scopeFilterByUnit(Builder $query, ?int $unitId): Builder
-    {
-        if (!$unitId) return $query;
-
-        return $query->where('unit_id', $unitId);
-    }
 }
