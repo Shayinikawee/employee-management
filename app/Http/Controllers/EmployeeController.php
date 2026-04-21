@@ -10,6 +10,8 @@ use App\Models\LeaveBalance;
 use App\Http\Requests\EmployeeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class EmployeeController extends Controller
 {
@@ -148,5 +150,67 @@ class EmployeeController extends Controller
                 'remaining_days' => $type->default_days,
             ]);
         }
+    }
+
+    public function export(Request $request)
+    {
+        $query = Employee::with('unit')
+            ->search($request->search)
+            ->filterByUnit($request->unit_id);
+
+        if ($request->status === 'active') {
+            $query->active();
+        } elseif ($request->status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        $employees = $query->orderBy('name')->get();
+
+        if ($request->format === 'csv') {
+            return $this->exportCsv($employees);
+        } elseif ($request->format === 'pdf') {
+            return $this->exportPdf($employees);
+        }
+    }
+
+    private function exportCsv($employees)
+    {
+        $filename = 'employees_' . now()->format('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function () use ($employees) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Name', 'PF Number', 'Email', 'NIC', 'Contact', 'Unit', 'Designation', 'Status']);
+            foreach ($employees as $employee) {
+                fputcsv($file, [
+                    $employee->name,
+                    $employee->pf_number,
+                    $employee->email,
+                    $employee->nic,
+                    $employee->contact_number,
+                    $employee->unit?->name,
+                    $employee->current_designation,
+                    $employee->is_active ? 'Active' : 'Inactive',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    private function exportPdf($employees)
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'Arial');
+        $dompdf = new Dompdf($options);
+        $html = view('employees.export_pdf', compact('employees'))->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+        return $dompdf->stream('employees_' . now()->format('Y-m-d') . '.pdf');
     }
 }

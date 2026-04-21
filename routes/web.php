@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
 
     // Employees
     Route::resource('employees', EmployeeController::class);
+    Route::get('/employees-export', [EmployeeController::class, 'export'])->name('employees.export');    Route::get('/employees-export', [EmployeeController::class, 'export'])->name('employees.export');
+    Route::get('/employees-export', [EmployeeController::class, 'export'])->name('employees.export');
 
     // Units
     Route::resource('units', UnitController::class);
