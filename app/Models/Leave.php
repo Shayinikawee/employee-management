@@ -33,20 +33,6 @@ class Leave extends Model
         ];
     }
 
-    /**
-     * Auto-calculate number of days when dates are set.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($leave) {
-            if ($leave->date_from && $leave->date_to && !$leave->number_of_days) {
-                $leave->number_of_days = Carbon::parse($leave->date_from)
-                    ->diffInDays(Carbon::parse($leave->date_to)) + 1;
-            }
-        });
-    }
 
     // ── Relationships ──────────────────────────────
 

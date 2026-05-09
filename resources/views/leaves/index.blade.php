@@ -1,6 +1,6 @@
 @extends('layouts.app')
-@section('title', 'Leave Management')
-@section('page-title', 'Leave Management')
+@section('title', $isAdmin ? 'Leave Management' : 'My Leave History')
+@section('page-title', $isAdmin ? 'Leave Management' : 'My Leave History')
 
 @section('content')
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -11,12 +11,14 @@
                 <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ ucfirst($s) }}</option>
             @endforeach
         </select>
-        <select name="employee_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm">
-            <option value="">All Employees</option>
-            @foreach($employees as $emp)
-                <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
-            @endforeach
-        </select>
+        @if($isAdmin)
+            <select name="employee_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm">
+                <option value="">All Employees</option>
+                @foreach($employees as $emp)
+                    <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
+                @endforeach
+            </select>
+        @endif
     </form>
     <a href="{{ route('leaves.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md transition-all">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg> Apply Leave
@@ -49,6 +51,17 @@
                     <span class="px-2 py-1 text-xs rounded-full font-medium {{ $c[$leave->status] ?? '' }}">{{ ucfirst($leave->status) }}</span>
                 </td>
                 <td class="px-5 py-3">
+                    <p class="text-xs text-slate-500 mb-1">
+                        {{ $leave->created_at?->format('d M Y, h:i A') }}
+                    </p>
+                    @if($leave->approved_by)
+                        <p class="text-xs text-slate-500 mb-1">
+                            Processed by {{ $leave->approvedByUser->name ?? 'N/A' }} on {{ $leave->approved_at?->format('d M Y, h:i A') }}
+                        </p>
+                    @endif
+                    @if($leave->status === 'rejected' && $leave->rejection_reason)
+                        <p class="text-xs text-red-600 mb-2">Reason: {{ $leave->rejection_reason }}</p>
+                    @endif
                     <div class="flex items-center gap-1">
                         <a href="{{ route('leaves.show', $leave) }}" class="text-xs text-amber-600 hover:text-amber-700 font-medium">View</a>
                         @if(auth()->user()->isAdmin() && $leave->status === 'pending')

@@ -12,6 +12,7 @@ class Employee extends Model
 
     protected $fillable = [
         'user_id',
+        'unit_id',
         'name',
         'pf_number',
         'address',
@@ -23,6 +24,9 @@ class Employee extends Model
         'current_designation',
         'date_of_first_appointment',
         'date_of_confirmation',
+        'is_active',
+        'approval_status',
+        'rejection_reason',
     ];
 
     protected function casts(): array
@@ -40,6 +44,11 @@ class Employee extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function unit()
+    {
+        return $this->belongsTo(Unit::class);
     }
 
     public function workHistories()
@@ -75,6 +84,49 @@ class Employee extends Model
               ->orWhere('nic', 'like', "%{$search}%")
               ->orWhere('contact_number', 'like', "%{$search}%");
         });
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopePending(Builder $query): Builder
+    {
+        return $query->where('approval_status', 'pending');
+    }
+
+    public function scopeApproved(Builder $query): Builder
+    {
+        return $query->where('approval_status', 'approved');
+    }
+
+    public function scopeRejected(Builder $query): Builder
+    {
+        return $query->where('approval_status', 'rejected');
+    }
+
+    // ── Methods ────────────────────────────────────
+
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved';
+    }
+
+    public function approve(): bool
+    {
+        return $this->update([
+            'approval_status' => 'approved',
+            'rejection_reason' => null,
+        ]);
+    }
+
+    public function reject(string $reason): bool
+    {
+        return $this->update([
+            'approval_status' => 'rejected',
+            'rejection_reason' => $reason,
+        ]);
     }
 
 }

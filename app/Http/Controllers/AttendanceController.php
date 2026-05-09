@@ -11,26 +11,45 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
+    private function getCurrentEmployeeId(): ?int
+    {
+        return auth()->user()?->employee?->id;
+    }
+
     /**
      * Display attendance listing.
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
+        $isAdmin = $user->isAdmin();
+        $currentEmployeeId = $this->getCurrentEmployeeId();
         $date = $request->date ?? Carbon::today()->toDateString();
+        $employeeId = $isAdmin ? $request->employee_id : $currentEmployeeId;
+        $unitId = $isAdmin ? $request->unit_id : null;
 
         $query = Attendance::with('employee.unit')
             ->forDate($date)
-            ->forEmployee($request->employee_id)
-            ->forUnit($request->unit_id);
+            ->forEmployee($employeeId)
+            ->forUnit($unitId);
+
+        // Prevent data leak: non-admin users without an employee record see nothing
+        if (!$isAdmin && !$currentEmployeeId) {
+            $query->where('employee_id', 0);
+        }
 
         $attendances = $query->orderBy('created_at', 'desc')
             ->paginate(20)
             ->withQueryString();
 
-        $employees = Employee::active()->orderBy('name')->get();
-        $units = Unit::orderBy('name')->get();
+        $employees = $isAdmin
+            ? Employee::active()->orderBy('name')->get()
+            : collect();
+        $units = $isAdmin
+            ? Unit::orderBy('name')->get()
+            : collect();
 
-        return view('attendance.index', compact('attendances', 'employees', 'units', 'date'));
+        return view('attendance.index', compact('attendances', 'employees', 'units', 'date', 'isAdmin'));
     }
 
     /**

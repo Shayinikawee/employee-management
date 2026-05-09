@@ -33,6 +33,14 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
+            // Check if user is staff and not approved
+            $user = auth()->user();
+            if ($user->isStaff() && $user->employee) {
+                if ($user->employee->approval_status !== 'approved') {
+                    return redirect()->route('registration.pending');
+                }
+            }
+
             return redirect()->intended(route('dashboard'));
         }
 

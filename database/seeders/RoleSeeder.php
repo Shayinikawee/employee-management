@@ -14,7 +14,7 @@ class RoleSeeder extends Seeder
             ['email' => 'admin@rda.gov.lk'],
             [
                 'name' => 'System Administrator',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('RDA@dmin2026!'), // Change immediately after first login
                 'role' => 'admin',
             ]
         );
