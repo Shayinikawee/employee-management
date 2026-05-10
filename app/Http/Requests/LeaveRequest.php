@@ -8,7 +8,19 @@ class LeaveRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+
+        if (!$user) {
+            return false;
+        }
+
+        if ($user->isAdmin()) {
+            return true;
+        }
+
+        $currentEmployeeId = $user->employee?->id;
+
+        return $currentEmployeeId !== null && (int) $this->input('employee_id') === $currentEmployeeId;
     }
 
     public function rules(): array

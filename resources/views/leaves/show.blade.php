@@ -1,12 +1,19 @@
 @extends('layouts.app')
-@section('title', 'Leave Details')
-@section('page-title', 'Leave Application Details')
+@section('title', auth()->user()->isAdmin() ? 'Leave Details' : 'My Leave Details')
+@section('page-title', auth()->user()->isAdmin() ? 'Leave Application Details' : 'My Leave Application Details')
 
 @section('content')
 <div class="max-w-2xl">
-    <a href="{{ route('leaves.index') }}" class="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1 mb-6">
+    <div class="flex items-center justify-between mb-6">
+    <a href="{{ route('leaves.index') }}" class="text-sm text-slate-500 hover:text-slate-700 flex items-center gap-1">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg> Back to Leaves
     </a>
+    @if(auth()->user()->isAdmin())
+    <a href="{{ route('leaves.index', ['employee_id' => $leave->employee_id]) }}" class="text-sm text-amber-600 hover:text-amber-700 font-medium">
+        View {{ $leave->employee->name ?? 'Employee' }} History
+    </a>
+    @endif
+    </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
         <div class="flex items-center justify-between mb-4">

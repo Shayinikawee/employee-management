@@ -10,12 +10,19 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Employee <span class="text-red-500">*</span></label>
+                    @if($isAdmin)
                     <select name="employee_id" id="employee_id" required class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30" onchange="checkBalance()">
                         <option value="">— Select Employee —</option>
                         @foreach($employees as $emp)
                             <option value="{{ $emp->id }}" {{ old('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }} ({{ $emp->pf_number }})</option>
                         @endforeach
                     </select>
+                    @else
+                    <input type="hidden" name="employee_id" id="employee_id" value="{{ old('employee_id', $currentEmployeeId) }}">
+                    <div class="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm bg-slate-50 text-slate-700">
+                        {{ optional($employees->first())->name ?? 'My Profile' }}
+                    </div>
+                    @endif
                     @error('employee_id')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>

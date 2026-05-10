@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\Unit;
 use App\Models\WorkHistory;
 use App\Models\LeaveType;
 use App\Models\LeaveBalance;
@@ -38,7 +39,9 @@ class EmployeeController extends Controller
      */
     public function create()
     {
-        return view('employees.create');
+        $units = Unit::orderBy('name')->get();
+
+        return view('employees.create', compact('units'));
     }
 
     /**
@@ -82,8 +85,9 @@ class EmployeeController extends Controller
     public function edit(Employee $employee)
     {
         $employee->load('workHistories');
+        $units = Unit::orderBy('name')->get();
 
-        return view('employees.edit', compact('employee'));
+        return view('employees.edit', compact('employee', 'units'));
     }
 
     /**
@@ -151,6 +155,9 @@ class EmployeeController extends Controller
         } elseif ($request->format === 'pdf') {
             return $this->exportPdf($employees);
         }
+
+        return redirect()->route('employees.index')
+            ->with('error', 'Invalid export format. Please choose CSV or PDF.');
     }
 
     private function exportCsv($employees)

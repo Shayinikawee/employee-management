@@ -54,6 +54,13 @@
                         class="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg shadow-amber-500/25 transition-all duration-200 hover:shadow-amber-500/40 active:scale-[0.98]">
                     Sign In
                 </button>
+
+                <div class="pt-4 border-t border-white/10">
+                    <p class="text-center text-sm text-slate-400">
+                        New to the system? 
+                        <a href="{{ route('register') }}" class="text-amber-400 hover:text-amber-300 font-semibold transition-colors">Register here</a>
+                    </p>
+                </div>
             </form>
         </div>
 

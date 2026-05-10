@@ -1,27 +1,29 @@
 @extends('layouts.app')
-@section('title', 'Attendance')
-@section('page-title', 'Attendance Tracking')
+@section('title', $isAdmin ? 'Attendance' : 'My Attendance')
+@section('page-title', $isAdmin ? 'Attendance Tracking' : 'My Attendance')
 
 @section('content')
 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
     <form method="GET" action="{{ route('attendance.index') }}" class="flex flex-wrap items-center gap-2">
         <input type="date" name="date" value="{{ $date }}" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30" onchange="this.form.submit()">
-        <select name="unit_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-            <option value="">All Units</option>
-            @foreach($units as $unit)
-                <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
-            @endforeach
-        </select>
-        <select name="employee_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
-            <option value="">All Employees</option>
-            @foreach($employees as $emp)
-                <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
-            @endforeach
-        </select>
+        @if($isAdmin)
+            <select name="unit_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+                <option value="">All Units</option>
+                @foreach($units as $unit)
+                    <option value="{{ $unit->id }}" {{ request('unit_id') == $unit->id ? 'selected' : '' }}>{{ $unit->name }}</option>
+                @endforeach
+            </select>
+            <select name="employee_id" onchange="this.form.submit()" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/30">
+                <option value="">All Employees</option>
+                @foreach($employees as $emp)
+                    <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
+                @endforeach
+            </select>
+        @endif
     </form>
     <div class="flex items-center gap-2">
+        @if($isAdmin)
         <a href="{{ route('attendance.summary') }}" class="px-4 py-2 bg-slate-100 text-slate-700 text-sm rounded-xl hover:bg-slate-200">Summary</a>
-        @if(auth()->user()->isAdmin())
         <a href="{{ route('attendance.import') }}" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow-md transition-all">Import Data</a>
         @endif
     </div>

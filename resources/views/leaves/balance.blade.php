@@ -1,15 +1,17 @@
 @extends('layouts.app')
-@section('title', 'Leave Balances')
-@section('page-title', 'Leave Balances')
+@section('title', $isAdmin ? 'Leave Balances' : 'My Leave Balances')
+@section('page-title', $isAdmin ? 'Leave Balances' : 'My Leave Balances')
 
 @section('content')
 <form method="GET" action="{{ route('leaves.balance') }}" class="flex flex-wrap items-center gap-2 mb-6">
-    <select name="employee_id" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm" onchange="this.form.submit()">
-        <option value="">All Employees</option>
-        @foreach($employees as $emp)
-            <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
-        @endforeach
-    </select>
+    @if($isAdmin)
+        <select name="employee_id" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm" onchange="this.form.submit()">
+            <option value="">All Employees</option>
+            @foreach($employees as $emp)
+                <option value="{{ $emp->id }}" {{ request('employee_id') == $emp->id ? 'selected' : '' }}>{{ $emp->name }}</option>
+            @endforeach
+        </select>
+    @endif
     <input type="number" name="year" value="{{ $year }}" min="2020" max="2030" class="px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm w-24" onchange="this.form.submit()">
 </form>
 
